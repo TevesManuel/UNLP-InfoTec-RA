@@ -26,7 +26,7 @@
 
 
 const scene = new THREE.Scene();
-const camera = new THREE.Camera();
+const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
 scene.add(camera);
 
 const renderer = new THREE.WebGLRenderer({
@@ -69,12 +69,7 @@ var ArMarkerControls = new THREEx.ArMarkerControls(ArToolkitContext, camera, {
 
 scene.visible = false;
 
-const geometry = new THREE.CubeGeometry( 1, 1, 1 );
-const material = new THREE.MeshNormalMaterial( {
-    transparent:  true,
-    opacity: 1.0,
-    side: THREE.DoubleSide,
-} );
+//3d model
 const loader = new THREE.GLTFLoader();
 
 loader.load(window.location.pathname + 'Model.glb', function (gltf) {
@@ -86,6 +81,37 @@ loader.load(window.location.pathname + 'Model.glb', function (gltf) {
     console.error('Error al cargar el modelo:', error);
 });
 
+//Clicker cube
+const geometry = new THREE.CubeGeometry( 1, 1, 1 );
+const material = new THREE.MeshNormalMaterial( {
+    transparent:  true,
+    opacity: 1.0,
+    side: THREE.DoubleSide,
+} );
+const cube = new THREE.Mesh(geometry, material);
+cube.position.set(0.9, 1.2, -0.2);
+((scale) => {cube.scale.set(scale, scale, scale)})(0.25)
+
+scene.add(cube);
+
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+
+function onClick(event) {
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+    raycaster.setFromCamera(mouse, camera);
+    const intersects = raycaster.intersectObjects([cube]);
+
+    if (intersects.length > 0) {
+        console.log('Cubo clickeado');
+    }
+}
+
+window.addEventListener('click', onClick, false);
+
+//Ligths
 const light = new THREE.AmbientLight(0xffffff, 1);
 scene.add(light);
 
@@ -99,7 +125,8 @@ function animate() {
 
     requestAnimationFrame( animate );
     ArToolkitContext.update(ArToolkitSource.domElement);
-    scene.visible = camera.visible;
+    // scene.visible = camera.visible;
+    scene.visible = true;
     renderer.render( scene, camera );
 
 }
