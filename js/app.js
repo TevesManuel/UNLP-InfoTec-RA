@@ -121,14 +121,6 @@ function onClick(event) {
 
 window.addEventListener('click', onClick, false);
 
-//Ligths
-const light = new THREE.AmbientLight(0xffffff, 1);
-scene.add(light);
-
-const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-directionalLight.position.set(1, 1, 1);
-scene.add(directionalLight);
-
 camera.position.z = 5;
 
 function animate() {
