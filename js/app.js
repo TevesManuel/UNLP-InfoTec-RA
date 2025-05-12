@@ -74,7 +74,17 @@ const loader = new THREE.GLTFLoader();
 
 loader.load(window.location.pathname + 'Model.glb', function (gltf) {
     const model = gltf.scene;
-    model.scale.set(1,1,1);
+    model.traverse((child) => {
+        if (child.isMesh) {
+            const oldMat = child.material;
+            const color = oldMat.color.clone().multiplyScalar(1.5);
+            child.material = new THREE.MeshBasicMaterial({
+                map: oldMat.map,
+                color: color,
+            });
+        }
+    });
+    model.scale.set(1, 1, 1);
     model.position.set(0, 0, 0);
     scene.add(model);
 }, undefined, function (error) {
