@@ -24,113 +24,122 @@
  * O EL USO U OTRO TIPO DE ACCIONES EN EL SOFTWARE.
  */
 
+class ARApp {
+    constructor() {
+        this.scene = new THREE.Scene();
+        this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        this.scene.add(this.camera);
 
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-scene.add(camera);
+        this.renderer = new THREE.WebGLRenderer({
+                antialias: true,
+                alpha: true
+        });
+        this.setupRenderer();
 
-const renderer = new THREE.WebGLRenderer({
-    antialias: true,
-    alpha: true
-});
-renderer.setSize( window.innerWidth, window.innerHeight );
-renderer.domElement.style.position = 'absolute';
-renderer.domElement.style.top = '0px';
-renderer.domElement.style.left = '0px';
-renderer.domElement.style.width = '100vw';
-renderer.domElement.style.height = '100vh';
-document.body.appendChild( renderer.domElement );
+        this.setupARToolkit();
+        this.loadModel();
+        this.addCube();
 
-var ArToolkitSource = new THREEx.ArToolkitSource({
-    sourceType: "webcam",
-});
-ArToolkitSource.init(() => {
-    ArToolkitSource.onResizeElement();
-    ArToolkitSource.copyElementSizeTo(renderer.domElement);
-    setTimeout(() => {
-        ArToolkitSource.onResizeElement();
-        ArToolkitSource.copyElementSizeTo(renderer.domElement);
-    }, 250);
-});
+        this.camera.position.z = 5;
+        this.raycaster = new THREE.Raycaster();
+        this.mouse = new THREE.Vector2();
 
-var ArToolkitContext = new THREEx.ArToolkitContext({
-    cameraParametersUrl: 'camera_para.dat',
-    detectionMode: 'color_and_matrix'
-});
-ArToolkitContext.init(() => {
-    camera.projectionMatrix.copy(ArToolkitContext.getProjectionMatrix());
-});
+        window.addEventListener('click', this.onClick.bind(this), false);
+        this.animate();
+    }
 
-var ArMarkerControls = new THREEx.ArMarkerControls(ArToolkitContext, camera, {
-    type: 'pattern',
-    patternUrl: 'pattern-qrcode.patt',
-    changeMatrixMode: 'cameraTransformMatrix',
-});
+    setupRenderer() {
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+        this.renderer.domElement.style.position = 'absolute';
+        this.renderer.domElement.style.top = '0px';
+        this.renderer.domElement.style.left = '0px';
+        this.renderer.domElement.style.width = '100vw';
+        this.renderer.domElement.style.height = '100vh';
+        document.body.appendChild(this.renderer.domElement);
+    }
 
-scene.visible = false;
+    setupARToolkit() {
+        this.arSource = new THREEx.ArToolkitSource({
+            sourceType: 'webcam'
+        });
+        this.arSource.init(() => {
+            this.arSource.onResizeElement();
+            this.arSource.copyElementSizeTo(this.renderer.domElement);
+            setTimeout(() => {
+                this.arSource.onResizeElement();
+                this.arSource.copyElementSizeTo(this.renderer.domElement);
+            }, 250);
+        });
 
-//3d model
-const loader = new THREE.GLTFLoader();
+        this.arContext = new THREEx.ArToolkitContext({
+            cameraParametersUrl: 'camera_para.dat',
+            detectionMode: 'color_and_matrix'
+        });
+        this.arContext.init(() => {
+            this.camera.projectionMatrix.copy(this.arContext.getProjectionMatrix());
+        });
 
-loader.load(window.location.pathname + 'Model.glb', function (gltf) {
-    const model = gltf.scene;
-    model.traverse((child) => {
-        if (child.isMesh) {
-            const oldMat = child.material;
-            const color = oldMat.color.clone().multiplyScalar(1.5);
-            child.material = new THREE.MeshBasicMaterial({
-                map: oldMat.map,
-                color: color,
+        new THREEx.ArMarkerControls(this.arContext, this.camera, {
+            type: 'pattern',
+            patternUrl: 'pattern-qrcode.patt',
+            changeMatrixMode: 'cameraTransformMatrix'
+        });
+
+        this.scene.visible = false;
+    }
+
+    loadModel() {
+        const loader = new THREE.GLTFLoader();
+        loader.load(window.location.pathname + 'Model.glb', (gltf) => {
+            const model = gltf.scene;
+            model.traverse((child) => {
+                if (child.isMesh) {
+                    const oldMat = child.material;
+                    const color = oldMat.color.clone().multiplyScalar(1.5);
+                    child.material = new THREE.MeshBasicMaterial({
+                        map: oldMat.map,
+                        color: color
+                    });
+                }
             });
+            model.scale.set(1, 1, 1);
+            model.position.set(0, 0, 0);
+            this.scene.add(model);
+        }, undefined, (error) => {
+            console.error('Error al cargar el modelo:', error);
+        });
+    }
+
+    addCube() {
+        const geometry = new THREE.CubeGeometry(1, 1, 1);
+        const material = new THREE.MeshNormalMaterial({
+            transparent: true,
+            opacity: 1.0,
+            side: THREE.DoubleSide
+        });
+        this.cube = new THREE.Mesh(geometry, material);
+        this.cube.position.set(0.9, 1.2, -0.2);
+        this.cube.scale.set(0.25, 0.25, 0.25);
+        this.scene.add(this.cube);
+    }
+
+    onClick(event) {
+        this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+        this.raycaster.setFromCamera(this.mouse, this.camera);
+        const intersects = this.raycaster.intersectObjects([this.cube]);
+
+        if (intersects.length > 0) {
+            console.log('Cubo clickeado');
         }
-    });
-    model.scale.set(1, 1, 1);
-    model.position.set(0, 0, 0);
-    scene.add(model);
-}, undefined, function (error) {
-    console.error('Error al cargar el modelo:', error);
-});
+    }
 
-//Clicker cube
-const geometry = new THREE.CubeGeometry( 1, 1, 1 );
-const material = new THREE.MeshNormalMaterial( {
-    transparent:  true,
-    opacity: 1.0,
-    side: THREE.DoubleSide,
-} );
-const cube = new THREE.Mesh(geometry, material);
-cube.position.set(0.9, 1.2, -0.2);
-((scale) => {cube.scale.set(scale, scale, scale)})(0.25)
-
-scene.add(cube);
-
-const raycaster = new THREE.Raycaster();
-const mouse = new THREE.Vector2();
-
-function onClick(event) {
-    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
-    raycaster.setFromCamera(mouse, camera);
-    const intersects = raycaster.intersectObjects([cube]);
-
-    if (intersects.length > 0) {
-        console.log('Cubo clickeado');
+    animate() {
+        requestAnimationFrame(this.animate.bind(this));
+        this.arContext.update(this.arSource.domElement);
+        this.scene.visible = true;
+        this.renderer.render(this.scene, this.camera);
     }
 }
 
-window.addEventListener('click', onClick, false);
-
-camera.position.z = 5;
-
-function animate() {
-
-    requestAnimationFrame( animate );
-    ArToolkitContext.update(ArToolkitSource.domElement);
-    // scene.visible = camera.visible;
-    scene.visible = true;
-    renderer.render( scene, camera );
-
-}
-
-animate();
+new ARApp();
