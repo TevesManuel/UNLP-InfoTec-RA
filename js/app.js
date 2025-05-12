@@ -54,15 +54,17 @@ class ARModel {
     }
     
     setVisible(state) {
-        if (this.model) this.model.visible = state;
+        if (this.model) {
+            const newState = state;
+            this.model.traverse((child) => {
+                if (child.visible !== undefined) child.visible = newState;
+            });
+        }
     }
 
     toggleVisibility() {
-        console.log('asd');
-        console.log(this.model);
         if (this.model) {
             const newState = !this.model.visible;
-            console.log('dsa');
             this.model.traverse((child) => {
                 if (child.visible !== undefined) child.visible = newState;
             });
@@ -70,7 +72,6 @@ class ARModel {
     }s
 
 }
-
 
 class ClickableCube {
     constructor(scene, position, scale, cbkFn) {
@@ -110,57 +111,6 @@ class ClickableCube {
 }
 
 class ARApp {
-    constructor() {
-        this.scene = new THREE.Scene();
-        this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-        this.scene.add(this.camera);
-
-        this.renderer = new THREE.WebGLRenderer({
-                antialias: true,
-                alpha: true
-        });
-        this.setupRenderer();
-
-        this.setupARToolkit();
-
-        this.model = new ARModel(
-            this.scene,
-            window.location.pathname + 'Model.glb',
-            {
-                x: 0,
-                y: 0,
-                z: 0
-            },
-            {
-                x: 1,
-                y: 1,
-                z: 1
-        });
-
-        this.clickeable = new ClickableCube(
-            this.scene,
-            {
-                x: 0.9,
-                y: 1.2,
-                z: -0.2
-            },
-            {
-                x: 0.25,
-                y: 0.25,
-                z: 0.25
-        });
-        this.clickeable.onClick(() => {
-            this.model.toggleVisibility();
-        });
-        
-        this.camera.position.z = 5;
-        this.raycaster = new THREE.Raycaster();
-        this.mouse = new THREE.Vector2();
-
-        window.addEventListener('click', this.onClick.bind(this), false);
-        this.animate();
-    }
-
     setupRenderer() {
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.domElement.style.position = 'absolute';
@@ -210,6 +160,57 @@ class ARApp {
         this.arContext.update(this.arSource.domElement);
         this.scene.visible = true;
         this.renderer.render(this.scene, this.camera);
+    }
+
+    constructor() {
+        this.scene = new THREE.Scene();
+        this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        this.scene.add(this.camera);
+
+        this.renderer = new THREE.WebGLRenderer({
+                antialias: true,
+                alpha: true
+        });
+        this.setupRenderer();
+
+        this.setupARToolkit();
+
+        this.model = new ARModel(
+            this.scene,
+            window.location.pathname + 'Model.glb',
+            {
+                x: 0,
+                y: 0,
+                z: 0
+            },
+            {
+                x: 1,
+                y: 1,
+                z: 1
+        });
+
+        this.clickeable = new ClickableCube(
+            this.scene,
+            {
+                x: 0.9,
+                y: 1.2,
+                z: -0.2
+            },
+            {
+                x: 0.25,
+                y: 0.25,
+                z: 0.25
+        });
+        this.clickeable.onClick(() => {
+            this.model.toggleVisibility();
+        });
+        
+        this.camera.position.z = 5;
+        this.raycaster = new THREE.Raycaster();
+        this.mouse = new THREE.Vector2();
+
+        window.addEventListener('click', this.onClick.bind(this), false);
+        this.animate();
     }
 }
 
