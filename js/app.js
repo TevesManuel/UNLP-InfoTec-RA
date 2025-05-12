@@ -43,7 +43,7 @@ class ARModel {
             this.model.traverse((child) => {
                 if (child.isMesh) {
                     const oldMat = child.material;
-                    const color = oldMat.color.clone().multiplyScalar(1.5);
+                    const color = oldMat.color.clone().multiplyScalar(1.0);
                     child.material = new THREE.MeshBasicMaterial({
                         map: oldMat.map,
                         color: color,
@@ -166,6 +166,9 @@ class ARApp {
         requestAnimationFrame(this.animate.bind(this));
         this.arContext.update(this.arSource.domElement);
         this.scene.visible = true;
+        // if (this.doorAdvertisement.model) {
+        //     this.doorAdvertisement.model.lookAt(this.camera.position);
+        // }
         this.renderer.render(this.scene, this.camera);
     }
 
@@ -191,9 +194,9 @@ class ARApp {
                 z: 0
             },
             {
-                x: 1,
-                y: 1,
-                z: 1
+                x: 2,
+                y: 2,
+                z: 2
             },
             VECTOR3_ZERO
         );

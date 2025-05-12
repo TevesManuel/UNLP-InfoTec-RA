@@ -1,0 +1,2 @@
+Iluminacion
+Tarjeta 3d imagen translucida
