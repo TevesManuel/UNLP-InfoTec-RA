@@ -26,10 +26,15 @@
 
 class ARModel {
     constructor(scene, path, position, scale) {
+        this.model = null;
+        this.visible = false;
+        this.scene = scene;
+
         const loader = new THREE.GLTFLoader();
         loader.load(path, (gltf) => {
-            const model = gltf.scene;
-            model.traverse((child) => {
+            this.model = gltf.scene;
+            
+            this.model.traverse((child) => {
                 if (child.isMesh) {
                     const oldMat = child.material;
                     const color = oldMat.color.clone().multiplyScalar(1.5);
@@ -39,18 +44,37 @@ class ARModel {
                     });
                 }
             });
-            model.scale.set(scale.x, scale.y, scale.z);
-            model.position.set(position.x, position.y, position.z);
-            scene.add(model);
+            this.model.scale.set(scale.x, scale.y, scale.z);
+            this.model.position.set(position.x, position.y, position.z);
+            this.visible = true;
+            this.scene.add(this.model);
         }, undefined, function (error) {
             console.error('Error al cargar el modelo:', error);
         });
     }
+    
+    setVisible(state) {
+        if (this.model) this.model.visible = state;
+    }
+
+    toggleVisibility() {
+        console.log('asd');
+        console.log(this.model);
+        if (this.model) {
+            const newState = !this.model.visible;
+            console.log('dsa');
+            this.model.traverse((child) => {
+                if (child.visible !== undefined) child.visible = newState;
+            });
+        }
+    }s
+
 }
 
 
 class ClickableCube {
-    constructor(scene, position, scale) {
+    constructor(scene, position, scale, cbkFn) {
+        this.cbkFn = cbkFn;
         const geometry = new THREE.BoxGeometry(1, 1, 1);
         const material = new THREE.MeshNormalMaterial({
             transparent: true,
@@ -67,6 +91,10 @@ class ClickableCube {
         this.mouse = new THREE.Vector2();
     }
 
+    onClick(cbkFn) {
+        this.cbkFn = cbkFn;
+    }
+
     checkClick(event, camera) {
         this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
         this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
@@ -75,7 +103,8 @@ class ClickableCube {
         const intersects = this.raycaster.intersectObjects([this.mesh]);
 
         if (intersects.length > 0) {
-            console.log('Cubo clickeado');
+            console.log('[i] Debug: detected click.');
+            this.cbkFn();
         }
     }
 }
@@ -120,7 +149,10 @@ class ARApp {
                 y: 0.25,
                 z: 0.25
         });
-
+        this.clickeable.onClick(() => {
+            this.model.toggleVisibility();
+        });
+        
         this.camera.position.z = 5;
         this.raycaster = new THREE.Raycaster();
         this.mouse = new THREE.Vector2();
