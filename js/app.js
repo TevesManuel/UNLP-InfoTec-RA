@@ -25,7 +25,7 @@
  */
 
 class ARModel {
-    constructor(scene, path, scale, position) {
+    constructor(scene, path, position, scale) {
         const loader = new THREE.GLTFLoader();
         loader.load(path, (gltf) => {
             const model = gltf.scene;
@@ -48,6 +48,38 @@ class ARModel {
     }
 }
 
+
+class ClickableCube {
+    constructor(scene, position, scale) {
+        const geometry = new THREE.BoxGeometry(1, 1, 1);
+        const material = new THREE.MeshNormalMaterial({
+            transparent: true,
+            opacity: 1.0,
+            side: THREE.DoubleSide,
+        });
+
+        this.mesh = new THREE.Mesh(geometry, material);
+        this.mesh.position.set(position.x, position.y, position.z);
+        this.mesh.scale.set(scale.x, scale.y, scale.z);
+        scene.add(this.mesh);
+
+        this.raycaster = new THREE.Raycaster();
+        this.mouse = new THREE.Vector2();
+    }
+
+    checkClick(event, camera) {
+        this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+        this.raycaster.setFromCamera(this.mouse, camera);
+        const intersects = this.raycaster.intersectObjects([this.mesh]);
+
+        if (intersects.length > 0) {
+            console.log('Cubo clickeado');
+        }
+    }
+}
+
 class ARApp {
     constructor() {
         this.scene = new THREE.Scene();
@@ -62,19 +94,32 @@ class ARApp {
 
         this.setupARToolkit();
 
-        this.model = new ARModel(this.scene,
-                                 window.location.pathname + 'Model.glb',
-                                 {
-                                    x: 1,
-                                    y: 1,
-                                    z: 1
-                                },
-                                {
-                                    x: 0,
-                                    y: 0,
-                                    z: 0
+        this.model = new ARModel(
+            this.scene,
+            window.location.pathname + 'Model.glb',
+            {
+                x: 0,
+                y: 0,
+                z: 0
+            },
+            {
+                x: 1,
+                y: 1,
+                z: 1
         });
-        this.addCube();
+
+        this.clickeable = new ClickableCube(
+            this.scene,
+            {
+                x: 0.9,
+                y: 1.2,
+                z: -0.2
+            },
+            {
+                x: 0.25,
+                y: 0.25,
+                z: 0.25
+        });
 
         this.camera.position.z = 5;
         this.raycaster = new THREE.Raycaster();
@@ -124,28 +169,8 @@ class ARApp {
         this.scene.visible = false;
     }
 
-    addCube() {
-        const geometry = new THREE.CubeGeometry(1, 1, 1);
-        const material = new THREE.MeshNormalMaterial({
-            transparent: true,
-            opacity: 1.0,
-            side: THREE.DoubleSide
-        });
-        this.cube = new THREE.Mesh(geometry, material);
-        this.cube.position.set(0.9, 1.2, -0.2);
-        this.cube.scale.set(0.25, 0.25, 0.25);
-        this.scene.add(this.cube);
-    }
-
     onClick(event) {
-        this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-        this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-        this.raycaster.setFromCamera(this.mouse, this.camera);
-        const intersects = this.raycaster.intersectObjects([this.cube]);
-
-        if (intersects.length > 0) {
-            console.log('Cubo clickeado');
-        }
+        this.clickeable.checkClick(event, this.camera);
     }
 
     animate() {
