@@ -24,6 +24,30 @@
  * O EL USO U OTRO TIPO DE ACCIONES EN EL SOFTWARE.
  */
 
+class ARModel {
+    constructor(scene, path, scale, position) {
+        const loader = new THREE.GLTFLoader();
+        loader.load(path, (gltf) => {
+            const model = gltf.scene;
+            model.traverse((child) => {
+                if (child.isMesh) {
+                    const oldMat = child.material;
+                    const color = oldMat.color.clone().multiplyScalar(1.5);
+                    child.material = new THREE.MeshBasicMaterial({
+                        map: oldMat.map,
+                        color: color,
+                    });
+                }
+            });
+            model.scale.set(scale.x, scale.y, scale.z);
+            model.position.set(position.x, position.y, position.z);
+            scene.add(model);
+        }, undefined, function (error) {
+            console.error('Error al cargar el modelo:', error);
+        });
+    }
+}
+
 class ARApp {
     constructor() {
         this.scene = new THREE.Scene();
@@ -37,7 +61,19 @@ class ARApp {
         this.setupRenderer();
 
         this.setupARToolkit();
-        this.loadModel();
+
+        this.model = new ARModel(this.scene,
+                                 window.location.pathname + 'Model.glb',
+                                 {
+                                    x: 1,
+                                    y: 1,
+                                    z: 1
+                                },
+                                {
+                                    x: 0,
+                                    y: 0,
+                                    z: 0
+        });
         this.addCube();
 
         this.camera.position.z = 5;
@@ -86,28 +122,6 @@ class ARApp {
         });
 
         this.scene.visible = false;
-    }
-
-    loadModel() {
-        const loader = new THREE.GLTFLoader();
-        loader.load(window.location.pathname + 'Model.glb', (gltf) => {
-            const model = gltf.scene;
-            model.traverse((child) => {
-                if (child.isMesh) {
-                    const oldMat = child.material;
-                    const color = oldMat.color.clone().multiplyScalar(1.5);
-                    child.material = new THREE.MeshBasicMaterial({
-                        map: oldMat.map,
-                        color: color
-                    });
-                }
-            });
-            model.scale.set(1, 1, 1);
-            model.position.set(0, 0, 0);
-            this.scene.add(model);
-        }, undefined, (error) => {
-            console.error('Error al cargar el modelo:', error);
-        });
     }
 
     addCube() {
