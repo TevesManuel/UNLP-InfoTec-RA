@@ -24,8 +24,14 @@
  * O EL USO U OTRO TIPO DE ACCIONES EN EL SOFTWARE.
  */
 
+const VECTOR3_ZERO = {
+    x: 0,
+    y: 0,
+    z: 0,
+}
+
 class ARModel {
-    constructor(scene, path, position, scale) {
+    constructor(scene, path, position, scale, rotation) {
         this.model = null;
         this.visible = false;
         this.scene = scene;
@@ -46,6 +52,7 @@ class ARModel {
             });
             this.model.scale.set(scale.x, scale.y, scale.z);
             this.model.position.set(position.x, position.y, position.z);
+            this.model.rotation.set(rotation.x, rotation.y, rotation.z);
             this.visible = true;
             this.scene.add(this.model);
         }, undefined, function (error) {
@@ -187,14 +194,37 @@ class ARApp {
                 x: 1,
                 y: 1,
                 z: 1
-        });
+            },
+            VECTOR3_ZERO
+        );
+
+        this.doorAdvertisement = new ARModel(
+            this.scene,
+            window.location.pathname + 'HouseDoorAdvertisement.glb',
+            {
+                x: 0,
+                y: 1,
+                z: 1
+            },
+            {
+                x: 0.25,
+                y: 0.25,
+                z: 0.25
+            },
+            {
+                x: 0,
+                y: 3*Math.PI/2,
+                z: 0,
+            }
+        );
+        this.doorAdvertisement.setVisible(false);
 
         this.clickeable = new ClickableCube(
             this.scene,
             {
-                x: 0.9,
-                y: 1.2,
-                z: -0.2
+                x: -0.2,
+                y: 0.5,
+                z: 1.2
             },
             {
                 x: 0.25,
@@ -202,7 +232,7 @@ class ARApp {
                 z: 0.25
         });
         this.clickeable.onClick(() => {
-            this.model.toggleVisibility();
+            this.doorAdvertisement.toggleVisibility();
         });
         
         this.camera.position.z = 5;
