@@ -44,7 +44,8 @@ class ARModel {
                 if (child.isMesh) {
                     const oldMat = child.material;
                     const color = oldMat.color.clone().multiplyScalar(1.0);
-                    child.material = new THREE.MeshBasicMaterial({
+                    
+                    child.material = new THREE.MeshStandardMaterial({
                         map: oldMat.map,
                         color: color,
                     });
@@ -76,7 +77,7 @@ class ARModel {
                 if (child.visible !== undefined) child.visible = newState;
             });
         }
-    }s
+    }
 
 }
 
@@ -206,8 +207,8 @@ class ARApp {
             window.location.pathname + 'HouseDoorAdvertisement.glb',
             {
                 x: 0,
-                y: 1,
-                z: 1
+                y: 2,
+                z: 2.25
             },
             {
                 x: 0.25,
@@ -225,9 +226,9 @@ class ARApp {
         this.clickeable = new ClickableCube(
             this.scene,
             {
-                x: -0.2,
-                y: 0.5,
-                z: 1.2
+                x: -0.4,
+                y: 0.75,
+                z: 2.25
             },
             {
                 x: 0.25,
@@ -237,6 +238,15 @@ class ARApp {
         this.clickeable.onClick(() => {
             this.doorAdvertisement.toggleVisibility();
         });
+
+        const light = new THREE.AmbientLight(0xffffff, 1); // Luz ambiental
+        // // const light = new THREE.AmbientLight(0xffffff, 1.4); // Luz ambiental
+        this.scene.add(light);
+
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.75); // Luz direccional
+        // const dirLight = new THREE.DirectionalLight(0xffffff, 2.5); // Luz direccional
+        dirLight.position.set(0, 1, 1);
+        this.scene.add(dirLight);
         
         this.camera.position.z = 5;
         this.raycaster = new THREE.Raycaster();
