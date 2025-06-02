@@ -245,7 +245,8 @@ class ARApp {
 
         const dirLight = new THREE.DirectionalLight(0xffffff, 0.75); // Luz direccional
         // const dirLight = new THREE.DirectionalLight(0xffffff, 2.5); // Luz direccional
-        dirLight.position.set(0, 1, 1);
+        // dirLight.position.set(0, 1, 1);
+        dirLight.position.set(1, 1, 0);
         this.scene.add(dirLight);
         
         this.camera.position.z = 5;
