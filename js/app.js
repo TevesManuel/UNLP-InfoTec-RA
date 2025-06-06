@@ -40,17 +40,17 @@ class ARModel {
         loader.load(path, (gltf) => {
             this.model = gltf.scene;
             
-            this.model.traverse((child) => {
-                if (child.isMesh) {
-                    const oldMat = child.material;
-                    const color = oldMat.color.clone().multiplyScalar(1.0);
+            // this.model.traverse((child) => {
+            //     if (child.isMesh) {
+            //         const oldMat = child.material;
+            //         const color = oldMat.color.clone().multiplyScalar(1.0);
                     
-                    child.material = new THREE.MeshStandardMaterial({
-                        map: oldMat.map,
-                        color: color,
-                    });
-                }
-            });
+            //         child.material = new THREE.MeshStandardMaterial({
+            //             map: oldMat.map,
+            //             color: color,
+            //         });
+            //     }
+            // });
             this.model.scale.set(scale.x, scale.y, scale.z);
             this.model.position.set(position.x, position.y, position.z);
             this.model.rotation.set(rotation.x, rotation.y, rotation.z);
