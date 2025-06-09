@@ -224,7 +224,8 @@ class ARApp {
                 x: 0,
                 y: 3*Math.PI/2,
                 z: 0,
-            }
+            },
+            false
         );
         this.doorAdvertisement.setVisible(false);
 
