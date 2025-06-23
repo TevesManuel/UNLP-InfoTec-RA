@@ -24,104 +24,6 @@
  * O EL USO U OTRO TIPO DE ACCIONES EN EL SOFTWARE.
  */
 
-const VECTOR3_ZERO = {
-    x: 0,
-    y: 0,
-    z: 0,
-}
-
-class ARModel {
-    constructor(scene, path, position, scale, rotation, manualColor) {
-        this.model = null;
-        this.visible = false;
-        this.scene = scene;
-
-        const loader = new THREE.GLTFLoader();
-        loader.load(path, (gltf) => {
-            this.model = gltf.scene;
-
-            if (manualColor) {
-                this.model.traverse((child) => {
-                    if (child.isMesh) {
-                        const oldMat = child.material;
-                        const color = oldMat.color.clone().multiplyScalar(1.0);
-                        
-                        child.material = new THREE.MeshStandardMaterial({
-                            map: oldMat.map,
-                            color: color,
-                        });
-                    }
-                });
-            }
-
-            
-            this.model.scale.set(scale.x, scale.y, scale.z);
-            this.model.position.set(position.x, position.y, position.z);
-            this.model.rotation.set(rotation.x, rotation.y, rotation.z);
-            this.visible = true;
-            this.scene.add(this.model);
-        }, undefined, function (error) {
-            console.error('Error al cargar el modelo:', error);
-        });
-    }
-    
-    setVisible(state) {
-        if (this.model) {
-            const newState = state;
-            this.model.traverse((child) => {
-                if (child.visible !== undefined) child.visible = newState;
-            });
-        }
-    }
-
-    toggleVisibility() {
-        if (this.model) {
-            const newState = !this.model.visible;
-            this.model.traverse((child) => {
-                if (child.visible !== undefined) child.visible = newState;
-            });
-        }
-    }
-
-}
-
-class ClickableCube {
-    constructor(scene, position, scale, cbkFn) {
-        this.cbkFn = cbkFn;
-        const geometry = new THREE.BoxGeometry(1, 1, 1);
-        const material = new THREE.MeshNormalMaterial({
-            transparent: true,
-            opacity: 1.0,
-            side: THREE.DoubleSide,
-        });
-
-        this.mesh = new THREE.Mesh(geometry, material);
-        this.mesh.position.set(position.x, position.y, position.z);
-        this.mesh.scale.set(scale.x, scale.y, scale.z);
-        scene.add(this.mesh);
-
-        this.raycaster = new THREE.Raycaster();
-        this.mouse = new THREE.Vector2();
-    }
-
-    onClick(cbkFn) {
-        this.cbkFn = cbkFn;
-    }
-
-    checkClick(event, camera) {
-        this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-        this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
-        this.raycaster.setFromCamera(this.mouse, camera);
-        const intersects = this.raycaster.intersectObjects([this.mesh]);
-
-        if (intersects.length > 0) {
-            console.log('[i] Debug: detected click.');
-            this.cbkFn();
-        }
-    }
-}
-
 class ARApp {
     setupRenderer() {
         this.renderer.setSize(window.innerWidth, window.innerHeight);
@@ -163,8 +65,11 @@ class ARApp {
         this.scene.visible = false;
     }
 
+
     onClick(event) {
-        this.clickeable.checkClick(event, this.camera);
+        this.clickeables.forEach(clickeable => {        
+            clickeable.checkClick(event, this.camera);
+        });
     }
 
     animate() {
@@ -178,6 +83,8 @@ class ARApp {
     }
 
     constructor() {
+        this.clickeables = [];
+
         this.scene = new THREE.Scene();
         this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
         this.scene.add(this.camera);
@@ -207,43 +114,7 @@ class ARApp {
             true
         );
 
-        this.doorAdvertisement = new ARModel(
-            this.scene,
-            window.location.origin + '/Models/PuertaPopUp.glb',
-            {
-                x: 0,
-                y: 2,
-                z: 2.25
-            },
-            {
-                x: 0.25,
-                y: 0.25,
-                z: 0.25
-            },
-            {
-                x: 0,
-                y: 3*Math.PI/2,
-                z: 0,
-            },
-            false
-        );
-        this.doorAdvertisement.setVisible(false);
-
-        this.clickeable = new ClickableCube(
-            this.scene,
-            {
-                x: -0.4,
-                y: 0.75,
-                z: 2.25
-            },
-            {
-                x: 0.25,
-                y: 0.25,
-                z: 0.25
-        });
-        this.clickeable.onClick(() => {
-            this.doorAdvertisement.toggleVisibility();
-        });
+        this.doorElement = new DoorARElement(this.scene, window.location.origin, this.clickeables);
 
         const light = new THREE.AmbientLight(0xffffff, 1); // Luz ambiental
         // // const light = new THREE.AmbientLight(0xffffff, 1.4); // Luz ambiental
