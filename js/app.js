@@ -80,36 +80,18 @@ class ARApp {
         requestAnimationFrame(this.animate.bind(this));
         this.arContext.update(this.arSource.domElement);
         this.scene.visible = true;
-        // if (this.doorAdvertisement.model) {
-        //     this.doorAdvertisement.model.lookAt(this.camera.position);
-        // }
         this.renderer.render(this.scene, this.camera);
     }
 
     setupScene() {
         this.scene = new THREE.Scene();
         this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        this.camera.position.z = 5;
         this.scene.add(this.camera);
     }
 
     setupElements() {
-        this.model = new ARModel(
-            this.scene,
-            window.location.origin + '/Models/Model.glb',
-            {
-                x: 0,
-                y: 0,
-                z: 0
-            },
-            {
-                x: 2,
-                y: 2,
-                z: 2
-            },
-            VECTOR3_ZERO,
-            true
-        );
-        // this.main = new MainARElement(this.scene, window.location.origin); // Por alguna razon no funciona
+        this.main = new MainARElement(this.scene, window.location.origin); // Por alguna razon no funciona
         this.doorElement = new DoorARElement(this.scene, window.location.origin, this.clickeables);
     }
 
@@ -120,6 +102,10 @@ class ARApp {
         const dirLight = new THREE.DirectionalLight(0xffffff, 0.75);
         dirLight.position.set(1, 1, 0);
         this.scene.add(dirLight);
+    }
+
+    setupInput() {
+        window.addEventListener('click', this.onClick.bind(this), false);
     }
 
     constructor() {
@@ -133,11 +119,7 @@ class ARApp {
 
         this.setupLights();
         
-        this.camera.position.z = 5;
-        // this.raycaster = new THREE.Raycaster();
-        // this.mouse = new THREE.Vector2();
-
-        window.addEventListener('click', this.onClick.bind(this), false);
+        this.setupInput();
         this.animate();
     }
 }
