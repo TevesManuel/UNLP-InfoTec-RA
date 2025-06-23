@@ -192,7 +192,7 @@ class ARApp {
 
         this.model = new ARModel(
             this.scene,
-            window.location.pathname + 'Model.glb',
+            window.location.origin + '/Models/Model.glb',
             {
                 x: 0,
                 y: 0,
@@ -209,7 +209,7 @@ class ARApp {
 
         this.doorAdvertisement = new ARModel(
             this.scene,
-            window.location.pathname + 'HouseDoorAdvertisement.glb',
+            window.location.origin + '/Models/PuertaPopUp.glb',
             {
                 x: 0,
                 y: 2,
