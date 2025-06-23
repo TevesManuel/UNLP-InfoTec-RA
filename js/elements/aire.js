@@ -1,12 +1,12 @@
-class DoorARElement {
+class AireARElement {
     constructor(scene, clickeables) {
         this.model = new ARModel(
             scene,
-            window.location.origin + '/Models/PuertaPopUp.glb',
+            window.location.origin + '/Models/IRPopUp.glb',
             {
-                x: 0,
+                x: -0.4,
                 y: 2,
-                z: 2.25
+                z: 0.8
             },
             {
                 x: 0.25,
@@ -25,12 +25,12 @@ class DoorARElement {
             scene,
             {
                 x: -0.4,
-                y: 0.75,
-                z: 2.25
+                y: 1.2,
+                z: 0.8
             },
             {
-                x: 0.25,
-                y: 0.25,
+                x: 0.5,
+                y: 0.3,
                 z: 0.25
         });
         this.clickeable.onClick(() => {
