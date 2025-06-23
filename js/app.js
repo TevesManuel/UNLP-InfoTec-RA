@@ -26,6 +26,10 @@
 
 class ARApp {
     setupRenderer() {
+        this.renderer = new THREE.WebGLRenderer({
+                antialias: true,
+                alpha: true
+        });
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.domElement.style.position = 'absolute';
         this.renderer.domElement.style.top = '0px';
@@ -82,21 +86,13 @@ class ARApp {
         this.renderer.render(this.scene, this.camera);
     }
 
-    constructor() {
-        this.clickeables = [];
-
+    setupScene() {
         this.scene = new THREE.Scene();
         this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
         this.scene.add(this.camera);
+    }
 
-        this.renderer = new THREE.WebGLRenderer({
-                antialias: true,
-                alpha: true
-        });
-        this.setupRenderer();
-
-        this.setupARToolkit();
-
+    setupElements() {
         this.model = new ARModel(
             this.scene,
             window.location.origin + '/Models/Model.glb',
@@ -113,22 +109,33 @@ class ARApp {
             VECTOR3_ZERO,
             true
         );
-
+        // this.main = new MainARElement(this.scene, window.location.origin); // Por alguna razon no funciona
         this.doorElement = new DoorARElement(this.scene, window.location.origin, this.clickeables);
+    }
 
-        const light = new THREE.AmbientLight(0xffffff, 1); // Luz ambiental
-        // // const light = new THREE.AmbientLight(0xffffff, 1.4); // Luz ambiental
+    setupLights() {
+        const light = new THREE.AmbientLight(0xffffff, 1);
         this.scene.add(light);
 
-        const dirLight = new THREE.DirectionalLight(0xffffff, 0.75); // Luz direccional
-        // const dirLight = new THREE.DirectionalLight(0xffffff, 2.5); // Luz direccional
-        // dirLight.position.set(0, 1, 1);
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.75);
         dirLight.position.set(1, 1, 0);
         this.scene.add(dirLight);
+    }
+
+    constructor() {
+        this.clickeables = [];
+
+        this.setupScene();
+        this.setupRenderer();
+        this.setupARToolkit();
+
+        this.setupElements();
+
+        this.setupLights();
         
         this.camera.position.z = 5;
-        this.raycaster = new THREE.Raycaster();
-        this.mouse = new THREE.Vector2();
+        // this.raycaster = new THREE.Raycaster();
+        // this.mouse = new THREE.Vector2();
 
         window.addEventListener('click', this.onClick.bind(this), false);
         this.animate();
