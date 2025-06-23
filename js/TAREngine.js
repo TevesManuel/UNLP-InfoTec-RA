@@ -24,6 +24,8 @@
  * O EL USO U OTRO TIPO DE ACCIONES EN EL SOFTWARE.
  */
 
+TAR_CLICKEABLECUBE_VISIBLE = true;
+
 const VECTOR3_ZERO = {
     x: 0,
     y: 0,
@@ -91,10 +93,10 @@ class ClickableCube {
         const geometry = new THREE.BoxGeometry(1, 1, 1);
         const material = new THREE.MeshNormalMaterial({
             transparent: true,
-            opacity: 1.0,
+            opacity: TAR_CLICKEABLECUBE_VISIBLE ? 1.0 : 0.0,
             side: THREE.DoubleSide,
         });
-
+        
         this.mesh = new THREE.Mesh(geometry, material);
         this.mesh.position.set(position.x, position.y, position.z);
         this.mesh.scale.set(scale.x, scale.y, scale.z);

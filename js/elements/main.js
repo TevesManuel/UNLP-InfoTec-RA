@@ -1,8 +1,8 @@
 class MainARElement {
-    constructor(scene, urlOrigin) {
+    constructor(scene) {
         this.model = new ARModel(
             scene,
-            urlOrigin + '/Models/Model.glb',
+            window.location.origin + '/Models/Model.glb',
             {
                 x: 0,
                 y: 0,

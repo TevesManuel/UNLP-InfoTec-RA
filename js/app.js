@@ -91,8 +91,9 @@ class ARApp {
     }
 
     setupElements() {
-        this.main = new MainARElement(this.scene, window.location.origin); // Por alguna razon no funciona
-        this.doorElement = new DoorARElement(this.scene, window.location.origin, this.clickeables);
+        this.main = new MainARElement(this.scene); // Por alguna razon no funciona
+        this.portonElement = new PortonARElement(this.scene, this.clickeables);
+        this.doorElement = new DoorARElement(this.scene, this.clickeables);
     }
 
     setupLights() {
