@@ -110,7 +110,7 @@ class ARApp {
         this.portonElement = new PortonARElement(this.scene, this.clickeables);
         this.aire = new AireARElement(this.scene, this.clickeables);
         this.luz = new LuzARElement(this.scene, this.clickeables);
-        // this.cortina
+        this.cortina = new CortinaARElement(this.scene, this.clickeables);
         // this.panelSolar
         // this.sensorGas
     }
@@ -129,7 +129,6 @@ class ARApp {
     }
 
     constructor() {
-        this.firstFrame = true;
         this.lastVisibleState = false;
         this.clickeables = [];
 
