@@ -111,7 +111,7 @@ class ARApp {
         this.aire = new AireARElement(this.scene, this.clickeables);
         this.luz = new LuzARElement(this.scene, this.clickeables);
         this.cortina = new CortinaARElement(this.scene, this.clickeables);
-        // this.panelSolar
+        this.panelSolar = new PanelSolarARElement(this.scene, this.clickeables);
         // this.sensorGas
     }
 
