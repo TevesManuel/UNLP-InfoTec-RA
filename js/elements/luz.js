@@ -2,7 +2,7 @@ class LuzARElement {
     constructor(scene, clickeables) {
         this.model = new ARModel(
             scene,
-            new URL('Models/LuzPopUp.glb', window.location.href).href,
+            new URL('Models/LuzPopUp.glb', window.location.origin + window.location.pathname.split('/').slice(0, 2).join('/') + '/').href,
             {
                 x: 1.5,
                 y: 2,

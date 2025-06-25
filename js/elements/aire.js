@@ -2,7 +2,7 @@ class AireARElement {
     constructor(scene, clickeables) {
         this.model = new ARModel(
             scene,
-            new URL('Models/IRPopUp.glb', window.location.href).href,
+            new URL('Models/IRPopUp.glb', window.location.origin + window.location.pathname.split('/').slice(0, 2).join('/') + '/').href,
             {
                 x: -0.4,
                 y: 2,

@@ -2,7 +2,7 @@ class MainARElement {
     constructor(scene) {
         this.model = new ARModel(
             scene,
-            new URL('Models/Model.glb', window.location.href).href,
+            new URL('Models/Model.glb', window.location.origin + window.location.pathname.split('/').slice(0, 2).join('/') + '/').href,
             {
                 x: 0,
                 y: 0,
