@@ -34,8 +34,9 @@ class PanelSolarARElement {
                 z: 0.5
         });
         this.clickeable.onClick(() => {
+            let newState = !this.model.model.visible;
             scene.hideTARObjects();
-            this.model.toggleVisibility();
+            this.model.setVisible(newState);
         });
         clickeables.push(this.clickeable);
         scene.TARObjects.push(this);

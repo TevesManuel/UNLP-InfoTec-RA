@@ -1,12 +1,12 @@
-class LuzARElement {
+class SensorGasARElement {
     constructor(scene, clickeables) {
         this.model = new ARModel(
             scene,
-            new URL('Models/LuzPopUp.glb', window.location.origin + window.location.pathname.split('/').slice(0, 2).join('/') + '/').href,
+            new URL('Models/SensorGasPopUp.glb', window.location.origin + window.location.pathname.split('/').slice(0, 2).join('/') + '/').href,
             {
-                x: 1.5,
+                x: 0,
                 y: 2,
-                z: 1.75
+                z: 0.8
             },
             {
                 x: 0.25,
@@ -24,13 +24,13 @@ class LuzARElement {
         this.clickeable = new ClickableCube(
             scene,
             {
-                x: 1.45,
-                y: 0.75,
-                z: 1.6
+                x: 0.1,
+                y: 1.2,
+                z: 0.8
             },
             {
                 x: 0.25,
-                y: 1.0,
+                y: 0.25,
                 z: 0.25
         });
         this.clickeable.onClick(() => {

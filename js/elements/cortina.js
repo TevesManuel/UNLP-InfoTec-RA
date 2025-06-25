@@ -34,8 +34,9 @@ class CortinaARElement {
                 z: 0.25
         });
         this.clickeable.onClick(() => {
+            let newState = !this.model.model.visible;
             scene.hideTARObjects();
-            this.model.toggleVisibility();
+            this.model.setVisible(newState);
         });
         clickeables.push(this.clickeable);
         scene.TARObjects.push(this);
