@@ -35,7 +35,6 @@ const VECTOR3_ZERO = {
 class ARModel {
     constructor(scene, path, position, scale, rotation, manualColor) {
         this.model = null;
-        this.visible = false;
         this.scene = scene;
 
         const loader = new THREE.GLTFLoader();
@@ -56,11 +55,9 @@ class ARModel {
                 });
             }
 
-            
             this.model.scale.set(scale.x, scale.y, scale.z);
             this.model.position.set(position.x, position.y, position.z);
             this.model.rotation.set(rotation.x, rotation.y, rotation.z);
-            this.visible = true;
             this.scene.add(this.model);
         }, undefined, function (error) {
             console.error('Error al cargar el modelo:', error);

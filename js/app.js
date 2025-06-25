@@ -79,8 +79,16 @@ class ARApp {
     animate() {
         requestAnimationFrame(this.animate.bind(this));
         this.arContext.update(this.arSource.domElement);
-        this.scene.visible = true;
+        this.scene.visible = this.camera.visible;
+
+        if (!this.lastVisibleState && this.scene.visible) {
+            this.firstFrame = false;
+            this.scene.hideTARObjects();
+        }
+
         this.renderer.render(this.scene, this.camera);
+
+        this.lastVisibleState = this.scene.visible;
     }
 
     setupScene() {
@@ -88,13 +96,23 @@ class ARApp {
         this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
         this.camera.position.z = 5;
         this.scene.add(this.camera);
+        this.scene.TARObjects = [];
+        this.scene.hideTARObjects = () => {
+            this.scene.TARObjects.forEach(element => {
+                element.model.setVisible(false);
+            });
+        };
     }
 
     setupElements() {
-        this.main = new MainARElement(this.scene); // Por alguna razon no funciona
+        this.main = new MainARElement(this.scene);
         this.doorElement = new DoorARElement(this.scene, this.clickeables);
         this.portonElement = new PortonARElement(this.scene, this.clickeables);
         this.aire = new AireARElement(this.scene, this.clickeables);
+        this.luz = new LuzARElement(this.scene, this.clickeables);
+        // this.cortina
+        // this.panelSolar
+        // this.sensorGas
     }
 
     setupLights() {
@@ -111,6 +129,8 @@ class ARApp {
     }
 
     constructor() {
+        this.firstFrame = true;
+        this.lastVisibleState = false;
         this.clickeables = [];
 
         this.setupScene();

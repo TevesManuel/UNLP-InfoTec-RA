@@ -34,8 +34,10 @@ class DoorARElement {
                 z: 0.25
         });
         this.clickeable.onClick(() => {
+            scene.hideTARObjects();
             this.model.toggleVisibility();
         });
         clickeables.push(this.clickeable);
+        scene.TARObjects.push(this);
     }
 }

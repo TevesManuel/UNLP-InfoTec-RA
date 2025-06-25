@@ -1,12 +1,12 @@
-class PortonARElement {
+class LuzARElement {
     constructor(scene, clickeables) {
         this.model = new ARModel(
             scene,
-            window.location.origin + '/Models/PortonPopUp.glb',
+            window.location.origin + '/Models/LuzPopUp.glb',
             {
-                x: 0.8,
+                x: 1.5,
                 y: 2,
-                z: 2.25
+                z: 1.75
             },
             {
                 x: 0.25,
@@ -24,13 +24,13 @@ class PortonARElement {
         this.clickeable = new ClickableCube(
             scene,
             {
-                x: 0.7,
-                y: 0.8,
-                z: 2.25
+                x: 1.45,
+                y: 0.75,
+                z: 1.6
             },
             {
-                x: 0.5,
-                y: 0.5,
+                x: 0.25,
+                y: 1.0,
                 z: 0.25
         });
         this.clickeable.onClick(() => {
