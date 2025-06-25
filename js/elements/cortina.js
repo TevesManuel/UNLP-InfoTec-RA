@@ -38,6 +38,6 @@ class CortinaARElement {
             this.model.toggleVisibility();
         });
         clickeables.push(this.clickeable);
-        // scene.TARObjects.push(this);
+        scene.TARObjects.push(this);
     }
 }
