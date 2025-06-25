@@ -2,7 +2,7 @@ class DoorARElement {
     constructor(scene, clickeables) {
         this.model = new ARModel(
             scene,
-            window.location.origin + '/Models/PuertaPopUp.glb',
+            new URL('Models/PuertaPopUp.glb', window.location.href).href,
             {
                 x: 0,
                 y: 2,

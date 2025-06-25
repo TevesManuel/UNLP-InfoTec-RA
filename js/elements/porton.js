@@ -2,7 +2,7 @@ class PortonARElement {
     constructor(scene, clickeables) {
         this.model = new ARModel(
             scene,
-            window.location.origin + '/Models/PortonPopUp.glb',
+            new URL('Models/PortonPopUp.glb', window.location.href).href,
             {
                 x: 0.8,
                 y: 2,
