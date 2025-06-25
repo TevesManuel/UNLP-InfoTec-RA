@@ -113,6 +113,7 @@ class ARApp {
         this.cortina = new CortinaARElement(this.scene, this.clickeables);
         this.panelSolar = new PanelSolarARElement(this.scene, this.clickeables);
         this.sensorGas = new SensorGasARElement(this.scene, this.clickeables);
+        this.electromedicina = new ElectromedicinaARElement(this.scene, this.clickeables);
     }
 
     setupLights() {
